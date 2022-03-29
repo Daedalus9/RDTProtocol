@@ -44,11 +44,14 @@ void rdt_rcv(char* data, int socket_descriptor, struct sockaddr_in client_addres
     {
         recv(socket_descriptor, data, sizeof(data), 0);
         if(corrupt(data)==1) {
+            deliver_data(data);
+            sleep(2);
             udt_send("NACK");
         }
         else {
-            udt_send("ACK");
             deliver_data(data);
+            sleep(2);
+            udt_send("ACK");
         }
     }
 }

@@ -10,22 +10,23 @@
 
 char* make_pkt(char* data, char* checksum) {
     char* pkt;
-    if(rand()%10==6) {
-        char* alt_checksum="1";
-        pkt = malloc(sizeof(data) + sizeof(checksum) + 1);
-        strcpy(pkt, data);
-        strcat(pkt, alt_checksum);
-    }
-    else {
-        pkt = malloc(sizeof(data) + sizeof(checksum) + 1);
-        strcpy(pkt, data);
-        strcat(pkt, checksum);
-    }
+    pkt = malloc(sizeof(data) + sizeof(checksum) + 1);
+    strcpy(pkt, data);
+    strcat(pkt, checksum);
     return pkt;
 }
 
 void udt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
-    sendto(socket_descriptor, data, sizeof(data), 0, (struct sockaddr*) &server_address, server_address_length);
+    if(rand()%2==0) {
+        char* pkt;
+        pkt = malloc(sizeof(data)+ 1);
+        strcpy(pkt, data);
+        pkt[4] = '1';
+        sendto(socket_descriptor, pkt, sizeof(pkt), 0, (struct sockaddr*) &server_address, server_address_length);
+    }
+    else {
+        sendto(socket_descriptor, data, sizeof(data), 0, (struct sockaddr*) &server_address, server_address_length);
+    }
 }
 
 void rdt_rcv(char* rcvpkt) {
@@ -53,13 +54,41 @@ void rdt_rcv(char* rcvpkt) {
     close(socket_descriptor_server);
 }
 
+int isNACK(char* rcvpkt) {
+    if(rcvpkt[0]=='N') {
+        return 1;
+    }
+    else return 0;
+}
+
+int isACK(char* rcvpkt) {
+    if(rcvpkt[0]=='A') {
+        return 1;
+    }
+    else return 0;
+}
+
 void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
     char* checksum = "0";
     char rcvpkt[1024];
+    int retransmit = 0;
     while(1) {
-        char* sndpkt = make_pkt(data, checksum);
-        udt_send(sndpkt, socket_descriptor, server_address, server_address_length);
-        rdt_rcv(rcvpkt);
+        char* sndpkt;
+        if(isACK(rcvpkt)) {
+            retransmit = 0;
+        }
+        if(isNACK(rcvpkt)) {
+            printf("NACK received\nRetransmitting last packet...\n");
+            sleep(2);
+            udt_send(sndpkt, socket_descriptor, server_address, server_address_length);
+            rdt_rcv(rcvpkt);
+            retransmit = 1;
+        }
+        if(retransmit==0) {
+            sndpkt = make_pkt(data, checksum);
+            udt_send(sndpkt, socket_descriptor, server_address, server_address_length);
+            rdt_rcv(rcvpkt);
+        }
         sleep(2);
     }
 }
