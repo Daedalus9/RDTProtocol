@@ -6,11 +6,15 @@
 #include <netinet/in.h>
 #include <string.h>
 
+void deliver_data(char* data) {
+    printf("%s\n", data);
+}
+
 void rdt_rcv(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
     while (1)
     {
         recv(socket_descriptor, data, sizeof(data), 0);
-        printf("%s\n", data);
+        deliver_data(data);
     }
 }
 
