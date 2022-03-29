@@ -4,7 +4,32 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <string.h>
+
+int corrupt(char* data) {
+    if(data[4] - '0' ==1) {
+        return 1;
+    }
+    else return 0;
+}
+
+void udt_send(char* data) {
+    int socket_descriptor_client = socket(PF_INET, SOCK_DGRAM, 0);
+    struct sockaddr_in client_address;
+    client_address.sin_family = AF_INET;
+    client_address.sin_port = htons(8000);
+
+    socklen_t client_address_length = sizeof(client_address);
+    int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &client_address.sin_addr);
+    
+    if(addr_conversion_ret_code<1) {
+        perror("Error on address conversion");
+        exit(1);
+    }
+    sendto(socket_descriptor_client, data, sizeof(data), 0, (struct sockaddr*) &client_address, client_address_length);
+    close(socket_descriptor_client);
+}
 
 void extract_packet(int socket_descriptor, char* data) {
     recv(socket_descriptor, data, sizeof(data), 0);
@@ -14,11 +39,17 @@ void deliver_data(char* data) {
     printf("%s\n", data);
 }
 
-void rdt_rcv(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
+void rdt_rcv(char* data, int socket_descriptor, struct sockaddr_in client_address, socklen_t client_address_length) {
     while (1)
     {
-        extract_packet(socket_descriptor, data);
-        deliver_data(data);
+        recv(socket_descriptor, data, sizeof(data), 0);
+        if(corrupt(data)==1) {
+            udt_send("NACK");
+        }
+        else {
+            udt_send("ACK");
+            deliver_data(data);
+        }
     }
 }
 
