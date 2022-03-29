@@ -13,10 +13,14 @@ char* make_pkt(char* data) {
     return pkt;
 }
 
+void udt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
+    sendto(socket_descriptor, data, sizeof(data), 0, (struct sockaddr*) &server_address, server_address_length);
+}
+
 void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
     while(1) {
         char* packet = make_pkt(data);
-        sendto(socket_descriptor, packet, sizeof(packet), 0, (struct sockaddr*) &server_address, server_address_length);
+        udt_send(packet, socket_descriptor, server_address, server_address_length);
         sleep(2);
     }
 }
@@ -41,6 +45,7 @@ int main() {
         perror("Error on address conversion");
         exit(1);
     }
+    
     char* data = "DATA";
     rdt_send(data, socket_descriptor, server_address, server_address_length);
 }
