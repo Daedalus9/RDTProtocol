@@ -6,6 +6,14 @@
 #include <netinet/in.h>
 #include <string.h>
 
+void rdt_rcv(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
+    while (1)
+    {
+        recv(socket_descriptor, data, sizeof(data), 0);
+        printf("%s\n", data);
+    }
+}
+
 int main() {
     printf("RDT 1.0 Server\n");
 
@@ -30,10 +38,5 @@ int main() {
 
     char msg_buffer[1024];
     ssize_t msg_length = sizeof(msg_buffer);
-
-    while (1)
-    {
-        recv(socket_descriptor, msg_buffer, msg_length, 0);
-        printf("%s\n", msg_buffer);
-    }
+    rdt_rcv(msg_buffer, socket_descriptor, address, address_length);
 }
