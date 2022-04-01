@@ -27,7 +27,7 @@ void udt_send(char* data) {
         perror("Error on address conversion");
         exit(1);
     }
-    if(rand()%2==0) { // simulate corrupt response
+    if(rand()%10==5) { // simulate corrupt response
         char* cr="corrupt";
         char* pkt = malloc(strlen(cr)+ 1);
         strcpy(pkt, cr);

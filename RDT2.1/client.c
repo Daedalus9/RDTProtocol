@@ -54,6 +54,15 @@ void rdt_rcv(char* rcvpkt) {
     close(socket_descriptor_server);
 }
 
+int corrupt(char* rcvpkt) {
+    if (rcvpkt[0]!='N' && rcvpkt[0]!='A') {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
 int isNACK(char* rcvpkt) {
     if(rcvpkt[0]=='N') {
         return 1;
@@ -71,15 +80,16 @@ int isACK(char* rcvpkt) {
 void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
     char* checksum = "0";
     char* flag="0";
-    char rcvpkt[1024];
+    char rcvpkt[1024]="ACK";
     int retransmit = 0;
     while(1) {
         char* sndpkt;
         if(isACK(rcvpkt)) {
             retransmit = 0;
         }
-        if(isNACK(rcvpkt)) {
-            printf("NACK received\nRetransmitting last packet...\n");
+        if(isNACK(rcvpkt) || corrupt(rcvpkt)==1) {
+            if(corrupt(rcvpkt)==1) printf("Corrupt packet received\nRetransmitting last packet...\n");
+            else printf("NACK received\nRetransmitting last packet...\n");
             sleep(2);
             udt_send(sndpkt, socket_descriptor, server_address, server_address_length);
             rdt_rcv(rcvpkt);
