@@ -31,16 +31,19 @@ int set_socket() {
     return socket_descriptor;
 }
 
+struct sockaddr_in set_address(int port) {
+    struct sockaddr_in address;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_family = AF_INET;
+    address.sin_port = htons(port);
+    return address;
+}
+
 int main() {
     printf("RDT 1.0 Server\n");
 
     int socket_descriptor = set_socket();
-
-    struct sockaddr_in address;
-    address.sin_addr.s_addr=INADDR_ANY;
-    address.sin_family=AF_INET;
-    address.sin_port=htons(9000);
-
+    struct sockaddr_in address = set_address(9000);
     socklen_t address_length = sizeof(address);
 
     int bindCode = bind(socket_descriptor, (struct sockaddr*) &address, address_length);
