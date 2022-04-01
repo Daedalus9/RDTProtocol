@@ -34,14 +34,19 @@ int set_socket() {
     return socket_descriptor;
 }
 
+struct sockaddr_in set_address(int port) {
+    struct sockaddr_in server_address;
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(port);
+    return server_address;
+}
+
 int main() {
     printf("RDT 1.0 Client\n");
 
     int socket_descriptor = set_socket();
 
-    struct sockaddr_in server_address;
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(9000);
+    struct sockaddr_in server_address = set_address(9000);
 
     socklen_t server_address_length = sizeof(server_address);
     int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
