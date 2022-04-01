@@ -14,6 +14,13 @@ int corrupt(char* data) {
     else return 0;
 }
 
+int check_seq(char exp, char flag) {
+    if(exp == flag) {
+        return 1;
+    }
+    else return 0;
+}
+
 void udt_send(char* data) {
     int socket_descriptor_client = socket(PF_INET, SOCK_DGRAM, 0);
     struct sockaddr_in client_address;
@@ -46,18 +53,32 @@ void deliver_data(char* data) {
 }
 
 void rdt_rcv(char* data, int socket_descriptor, struct sockaddr_in client_address, socklen_t client_address_length) {
-    while (1)
-    {
+    char flag;
+    char exp_flag='0';
+    while (1) {
         recv(socket_descriptor, data, sizeof(data), 0);
+        flag = data[0];
         if(corrupt(data)==1) {
             deliver_data(data);
             sleep(2);
             udt_send("NACK");
         }
         else {
-            deliver_data(data);
-            sleep(2);
-            udt_send("ACK");
+            if(check_seq(exp_flag, flag)==1) {
+                deliver_data(data);
+                sleep(2);
+                udt_send("ACK");
+                if(flag=='0') exp_flag='1';
+                if(flag=='1') exp_flag='0';
+                printf("Now expected flag is %d\n", exp_flag - '0');
+            }
+            else {
+                printf("Received flag %d, expected flag %d. Probably caused by corrupt ACK send\n", flag - '0', exp_flag - '0');
+                if(exp_flag=='0') exp_flag='1';
+                else exp_flag='0';
+                sleep(2);
+                udt_send("ACK");
+            }   
         }
     }
 }
