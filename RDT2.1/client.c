@@ -7,7 +7,6 @@
 #include <arpa/inet.h>
 #include <string.h>
 
-
 char* make_pkt(char *flag, char* data, char* checksum) {
     char* pkt;
     pkt = malloc(sizeof(data) + sizeof(checksum) + 2);
@@ -20,7 +19,7 @@ char* make_pkt(char *flag, char* data, char* checksum) {
 void udt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
     if(rand()%2==0) {
         char* pkt;
-        pkt = malloc(sizeof(data)+ 2);
+        pkt = malloc(sizeof(data)+ 1);
         strcpy(pkt, data);
         pkt[5] = '1';
         sendto(socket_descriptor, pkt, sizeof(pkt), 0, (struct sockaddr*) &server_address, server_address_length);
@@ -71,6 +70,7 @@ int isACK(char* rcvpkt) {
 
 void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
     char* checksum = "0";
+    char* flag="0";
     char rcvpkt[1024];
     int retransmit = 0;
     while(1) {
@@ -86,9 +86,15 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
             retransmit = 1;
         }
         if(retransmit==0) {
-            sndpkt = make_pkt("0", data, checksum);
+            sndpkt = make_pkt(flag, data, checksum);
             udt_send(sndpkt, socket_descriptor, server_address, server_address_length);
             rdt_rcv(rcvpkt);
+            if(flag=="1") {
+                flag="0";
+            }
+            else {
+                flag="1";
+            }
         }
         sleep(2);
     }
