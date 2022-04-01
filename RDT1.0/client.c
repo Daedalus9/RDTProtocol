@@ -25,14 +25,19 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
     }
 }
 
-int main() {
-    printf("RDT 1.0 Client\n");
-
+int set_socket() {
     int socket_descriptor = socket(PF_INET, SOCK_DGRAM, 0);
     if(socket_descriptor == -1) {
         perror("Unable to initialize socket");
         exit(1);
     }
+    return socket_descriptor;
+}
+
+int main() {
+    printf("RDT 1.0 Client\n");
+
+    int socket_descriptor = set_socket();
 
     struct sockaddr_in server_address;
     server_address.sin_family = AF_INET;
