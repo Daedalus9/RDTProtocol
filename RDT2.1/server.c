@@ -27,7 +27,13 @@ void udt_send(char* data) {
         perror("Error on address conversion");
         exit(1);
     }
-    sendto(socket_descriptor_client, data, sizeof(data), 0, (struct sockaddr*) &client_address, client_address_length);
+    if(rand()%2==0) { // simulate corrupt response
+        char* cr="corrupt";
+        char* pkt = malloc(strlen(cr)+ 1);
+        strcpy(pkt, cr);
+        sendto(socket_descriptor_client, pkt, sizeof(pkt), 0, (struct sockaddr*) &client_address, client_address_length);
+    }
+    else sendto(socket_descriptor_client, data, sizeof(data), 0, (struct sockaddr*) &client_address, client_address_length);
     close(socket_descriptor_client);
 }
 
