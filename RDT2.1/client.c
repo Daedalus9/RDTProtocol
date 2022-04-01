@@ -84,7 +84,7 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
     int retransmit = 0;
     while(1) {
         char* sndpkt;
-        if(isACK(rcvpkt)) {
+        if(isACK(rcvpkt) && corrupt(rcvpkt)==0) {
             retransmit = 0;
         }
         if(isNACK(rcvpkt) || corrupt(rcvpkt)==1) {
