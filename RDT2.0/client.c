@@ -71,9 +71,9 @@ int isACK(char* rcvpkt) {
 void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
     char* checksum = "0";
     char rcvpkt[1024];
+    char* sndpkt;
     int retransmit = 0;
     while(1) {
-        char* sndpkt;
         if(isACK(rcvpkt)) {
             retransmit = 0;
         }
