@@ -102,23 +102,26 @@ int set_socket() {
     return socket_descriptor;
 }
 
-int main() {
-    printf("RDT 2.0 Client\n");
-
-    int socket_descriptor = set_socket();   
-
+struct sockaddr_in set_address(int port) {
     struct sockaddr_in server_address;
     server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(9000);
-
-    socklen_t server_address_length = sizeof(server_address);
+    server_address.sin_port = htons(port);
     int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
-    
     if(addr_conversion_ret_code<1) {
         perror("Error on address conversion");
         exit(1);
     }
+    return server_address;
+}
+
+int main() {
+    printf("RDT 2.0 Client\n");
+
+    int socket_descriptor = set_socket();   
+    struct sockaddr_in server_address = set_address(9000);
+    socklen_t server_address_length = sizeof(server_address);
     
     char* data = "DATA";
     rdt_send(data, socket_descriptor, server_address, server_address_length);
+    return 0;
 }
