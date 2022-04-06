@@ -14,19 +14,25 @@ int corrupt(char* data) {
     else return 0;
 }
 
+struct sockaddr_in set_address(int port, int isSend) {
+    struct sockaddr_in address;
+    address.sin_family=AF_INET;
+    address.sin_port=htons(port);
+    if(isSend==1) {
+        int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &address.sin_addr);
+        if(addr_conversion_ret_code<1) {
+            perror("Error on address conversion");
+            exit(1);
+        }
+    }
+    else address.sin_addr.s_addr=INADDR_ANY;
+    return address;
+}
+
 void udt_send(char* data) {
     int socket_descriptor_client = socket(PF_INET, SOCK_DGRAM, 0);
-    struct sockaddr_in client_address;
-    client_address.sin_family = AF_INET;
-    client_address.sin_port = htons(8000);
-
+    struct sockaddr_in client_address = set_address(8000, 1);
     socklen_t client_address_length = sizeof(client_address);
-    int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &client_address.sin_addr);
-    
-    if(addr_conversion_ret_code<1) {
-        perror("Error on address conversion");
-        exit(1);
-    }
     sendto(socket_descriptor_client, data, sizeof(data), 0, (struct sockaddr*) &client_address, client_address_length);
     close(socket_descriptor_client);
 }
@@ -65,14 +71,6 @@ int set_socket() {
     return socket_descriptor;
 }
 
-struct sockaddr_in set_address(int port) {
-    struct sockaddr_in address;
-    address.sin_addr.s_addr=INADDR_ANY;
-    address.sin_family=AF_INET;
-    address.sin_port=htons(port);
-    return address;
-}
-
 void check_bind(int socket_descriptor, struct sockaddr_in address, socklen_t address_length) {
     int bindCode = bind(socket_descriptor, (struct sockaddr*) &address, address_length);
     if(bindCode==-1) {
@@ -85,7 +83,7 @@ int main() {
     printf("RDT 2.0 Server\n");
 
     int socket_descriptor = set_socket();
-    struct sockaddr_in address = set_address(9000);
+    struct sockaddr_in address = set_address(9000, 0);
     socklen_t address_length = sizeof(address);
 
     check_bind(socket_descriptor, address, address_length);
