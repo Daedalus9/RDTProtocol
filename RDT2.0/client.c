@@ -16,6 +16,21 @@ int set_socket() {
     return socket_descriptor;
 }
 
+struct sockaddr_in set_address(int port, int isRcv) {
+    struct sockaddr_in server_address;
+    server_address.sin_port = htons(port);
+    server_address.sin_family = AF_INET;
+    if(isRcv==0) {
+        int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
+        if(addr_conversion_ret_code<1) {
+            perror("Error on address conversion");
+            exit(1);
+        }
+    }
+    else server_address.sin_addr.s_addr=INADDR_ANY;
+    return server_address;
+}
+
 char* make_pkt(char* data, char* checksum) {
     char* pkt;
     pkt = malloc(sizeof(data) + sizeof(checksum) + 1);
@@ -39,10 +54,7 @@ void udt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
 
 void rdt_rcv(char* rcvpkt) {
     int socket_descriptor_server = set_socket();
-    struct sockaddr_in server_address;
-    server_address.sin_addr.s_addr=INADDR_ANY;
-    server_address.sin_family=AF_INET;
-    server_address.sin_port=htons(8000);
+    struct sockaddr_in server_address = set_address(8000, 1);
 
     socklen_t address_length = sizeof(server_address);
 
@@ -97,23 +109,11 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
     }
 }
 
-struct sockaddr_in set_address(int port) {
-    struct sockaddr_in server_address;
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(port);
-    int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
-    if(addr_conversion_ret_code<1) {
-        perror("Error on address conversion");
-        exit(1);
-    }
-    return server_address;
-}
-
 int main() {
     printf("RDT 2.0 Client\n");
 
     int socket_descriptor = set_socket();   
-    struct sockaddr_in server_address = set_address(9000);
+    struct sockaddr_in server_address = set_address(9000, 0);
     socklen_t server_address_length = sizeof(server_address);
     
     char* data = "DATA";
