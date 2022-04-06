@@ -65,23 +65,30 @@ int set_socket() {
     return socket_descriptor;
 }
 
-int main() {
-    printf("RDT 2.0 Server\n");
-
-    int socket_descriptor = set_socket();
-
+struct sockaddr_in set_address(int port) {
     struct sockaddr_in address;
     address.sin_addr.s_addr=INADDR_ANY;
     address.sin_family=AF_INET;
-    address.sin_port=htons(9000);
+    address.sin_port=htons(port);
+    return address;
+}
 
-    socklen_t address_length = sizeof(address);
-
+void check_bind(int socket_descriptor, struct sockaddr_in address, socklen_t address_length) {
     int bindCode = bind(socket_descriptor, (struct sockaddr*) &address, address_length);
     if(bindCode==-1) {
         perror("Error on bind");
         exit(1);
     }
+}
+
+int main() {
+    printf("RDT 2.0 Server\n");
+
+    int socket_descriptor = set_socket();
+    struct sockaddr_in address = set_address(9000);
+    socklen_t address_length = sizeof(address);
+
+    check_bind(socket_descriptor, address, address_length);
 
     char msg_buffer[1024];
     ssize_t msg_length = sizeof(msg_buffer);
