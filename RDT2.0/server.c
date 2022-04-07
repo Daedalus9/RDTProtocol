@@ -14,17 +14,19 @@ int corrupt(char* data) {
     else return 0;
 }
 
-struct sockaddr_in set_address(int port, int isSend) {
-    struct sockaddr_in address;
-    address.sin_family=AF_INET;
-    address.sin_port=htons(port);
-    if(isSend==1) {
-        int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &address.sin_addr);
+int set_ip(struct sockaddr_in address, char* ip) {
+    int addr_conversion_ret_code = inet_pton(AF_INET, ip, &address.sin_addr);
         if(addr_conversion_ret_code<1) {
             perror("Error on address conversion");
             exit(1);
         }
-    }
+}
+
+struct sockaddr_in set_address(int port, int isSend) {
+    struct sockaddr_in address;
+    address.sin_family=AF_INET;
+    address.sin_port=htons(port);
+    if(isSend==1) set_ip(address, "127.0.0.1");
     else address.sin_addr.s_addr=INADDR_ANY;
     return address;
 }
