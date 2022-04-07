@@ -8,18 +8,16 @@
 #include <string.h>
 
 int corrupt(char* data) {
-    if(data[4] - '0' ==1) {
-        return 1;
-    }
+    if(data[4] - '0' ==1) return 1;
     else return 0;
 }
 
 int set_ip(struct sockaddr_in address, char* ip) {
     int addr_conversion_ret_code = inet_pton(AF_INET, ip, &address.sin_addr);
-        if(addr_conversion_ret_code<1) {
-            perror("Error on address conversion");
-            exit(1);
-        }
+    if(addr_conversion_ret_code<1) {
+        perror("Error on address conversion");
+        exit(1);
+    }
 }
 
 struct sockaddr_in set_address(int port, int isSend) {
@@ -48,8 +46,7 @@ void deliver_data(char* data) {
 }
 
 void rdt_rcv(char* data, int socket_descriptor, struct sockaddr_in client_address, socklen_t client_address_length) {
-    while (1)
-    {
+    while (1) {
         recv(socket_descriptor, data, sizeof(data), 0);
         if(corrupt(data)==1) {
             deliver_data(data);
