@@ -22,6 +22,14 @@ struct sockaddr_in set_address(int port, int isRcv) {
     return server_address;
 }
 
+void check_bind(int socket_descriptor, struct sockaddr_in address, socklen_t address_length) {
+    int bindCode = bind(socket_descriptor, (struct sockaddr*) &address, address_length);
+    if(bindCode==-1) {
+        perror("Error on bind");
+        exit(1);
+    }
+}
+
 char* make_pkt(char *flag, char* data, char* checksum) {
     char* pkt;
     pkt = malloc(sizeof(data) + sizeof(checksum) + 2);
@@ -52,12 +60,7 @@ void rdt_rcv(char* rcvpkt) {
     }
     struct sockaddr_in server_address = set_address(8000, 1);
     socklen_t address_length = sizeof(server_address);
-
-    int bindCode = bind(socket_descriptor_server, (struct sockaddr*) &server_address, address_length);
-    if(bindCode==-1) {
-        perror("Error on bind");
-        exit(1);
-    }
+    check_bind(socket_descriptor_server, server_address, address_length);   
     
     ssize_t rcvpkt_length = sizeof(rcvpkt);
     recv(socket_descriptor_server, rcvpkt, sizeof(rcvpkt), 0);
