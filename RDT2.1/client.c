@@ -110,6 +110,13 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
     }
 }
 
+struct sockaddr_in set_address() {
+    struct sockaddr_in server_address;
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(9000);
+    return server_address;
+}
+
 int set_socket() {
     int socket_descriptor = socket(PF_INET, SOCK_DGRAM, 0);
     if(socket_descriptor == -1) {
@@ -124,9 +131,7 @@ int main() {
 
     int socket_descriptor = set_socket();
 
-    struct sockaddr_in server_address;
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(9000);
+    struct sockaddr_in server_address = set_address();
 
     socklen_t server_address_length = sizeof(server_address);
     int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
