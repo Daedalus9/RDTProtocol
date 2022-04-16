@@ -7,6 +7,15 @@
 #include <arpa/inet.h>
 #include <string.h>
 
+int set_socket() {
+    int socket_descriptor = socket(PF_INET, SOCK_DGRAM, 0);
+    if(socket_descriptor == -1) {
+        perror("Unable to initialize socket");
+        exit(1);
+    }
+    return socket_descriptor;
+}
+
 struct sockaddr_in set_address(int port, int isRcv) {
     struct sockaddr_in server_address;
     server_address.sin_port = htons(port);
@@ -53,11 +62,7 @@ void udt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
 }
 
 void rdt_rcv(char* rcvpkt) {
-    int socket_descriptor_server = socket(PF_INET, SOCK_DGRAM, 0);
-    if(socket_descriptor_server == -1) {
-        perror("Unable to initialize socket");
-        exit(1);
-    }
+    int socket_descriptor_server = set_socket();
     struct sockaddr_in server_address = set_address(8000, 1);
     socklen_t address_length = sizeof(server_address);
     check_bind(socket_descriptor_server, server_address, address_length);   
@@ -122,15 +127,6 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
         }
         sleep(2);
     }
-}
-
-int set_socket() {
-    int socket_descriptor = socket(PF_INET, SOCK_DGRAM, 0);
-    if(socket_descriptor == -1) {
-        perror("Unable to initialize socket");
-        exit(1);
-    }
-    return socket_descriptor;
 }
 
 int main() {
