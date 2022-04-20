@@ -8,23 +8,17 @@
 #include <string.h>
 
 int corrupt(char* data) {
-    if(data[5] - '0' ==1) {
-        return 1;
-    }
+    if(data[5] - '0' ==1) return 1;
     else return 0;
 }
 
 int has_seq0(char* rcvpkt) {
-    if(rcvpkt[0]=='0') {
-        return 1;
-    }
+    if(rcvpkt[0]=='0') return 1;
     else return 0;
 }
 
 int has_seq1(char* rcvpkt) {
-    if(rcvpkt[0]=='1') {
-        return 1;
-    }
+    if(rcvpkt[0]=='1') return 1;
     else return 0;
 }
 
