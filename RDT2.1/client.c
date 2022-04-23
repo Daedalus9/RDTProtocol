@@ -56,9 +56,8 @@ void udt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
         pkt[5] = '1';
         sendto(socket_descriptor, pkt, sizeof(pkt), 0, (struct sockaddr*) &server_address, server_address_length);
     }
-    else {
+    else
         sendto(socket_descriptor, data, sizeof(data), 0, (struct sockaddr*) &server_address, server_address_length);
-    }
 }
 
 void rdt_rcv(char* rcvpkt) {
@@ -109,8 +108,7 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
             udt_send(sndpkt, socket_descriptor, server_address, server_address_length);
             rdt_rcv(rcvpkt);
             if(flag=="1") flag="0";
-            else flag="1";
-            
+            else flag="1";  
         }
         sleep(2);
     }
