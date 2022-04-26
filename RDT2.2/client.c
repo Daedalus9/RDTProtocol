@@ -8,19 +8,13 @@
 #include <string.h>
 
 int isACK(char* rcvpkt, char* flag) {
-    if(rcvpkt[0]=='A' && flag=="1") {
-        return 1;
-    }
+    if(rcvpkt[0]=='A' && flag=="1") return 1;
     else return 0;
 }
 
 int corrupt(char* rcvpkt) {
-    if (rcvpkt[0]!='A') {
-        return 1;
-    }
-    else {
-        return 0;
-    }
+    if (rcvpkt[0]!='A') return 1;
+    else return 0;
 }
 
 char* make_pkt(char *flag, char* data, char* checksum) {
@@ -65,10 +59,8 @@ void udt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
         pkt[5] = '1';
         sendto(socket_descriptor, pkt, sizeof(pkt), 0, (struct sockaddr*) &server_address, server_address_length);
     }
-    else {
+    else
         sendto(socket_descriptor, data, sizeof(data), 0, (struct sockaddr*) &server_address, server_address_length);
-    }
-    //sendto(socket_descriptor, data, sizeof(data), 0, (struct sockaddr*) &server_address, server_address_length);
 }
 
 void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
