@@ -7,6 +7,15 @@
 #include <arpa/inet.h>
 #include <string.h>
 
+int set_socket() {
+    int socket_descriptor = socket(PF_INET, SOCK_DGRAM, 0);
+    if (socket_descriptor == -1) {
+        perror("Unable to initialize socket");
+        exit(1);
+    }
+    return socket_descriptor;
+}
+
 int isACK(char* rcvpkt, char* flag) {
     if(rcvpkt[0]=='A' && flag=="1") return 1;
     else return 0;
@@ -27,11 +36,7 @@ char* make_pkt(char *flag, char* data, char* checksum) {
 }
 
 void rdt_rcv(char* rcvpkt) {
-    int socket_descriptor_server = socket(PF_INET, SOCK_DGRAM, 0);
-    if(socket_descriptor_server == -1) {
-        perror("Unable to initialize socket");
-        exit(1);
-    }
+    int socket_descriptor_server = set_socket();
     struct sockaddr_in server_address;
     server_address.sin_addr.s_addr=INADDR_ANY;
     server_address.sin_family=AF_INET;
@@ -112,11 +117,7 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
 int main() {
     printf("RDT 2.2 Client\n");
 
-    int socket_descriptor = socket(PF_INET, SOCK_DGRAM, 0);
-    if(socket_descriptor == -1) {
-        perror("Unable to initialize socket");
-        exit(1);
-    }
+    int socket_descriptor = set_socket();
 
     struct sockaddr_in server_address;
     server_address.sin_family = AF_INET;
