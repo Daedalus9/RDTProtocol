@@ -130,14 +130,7 @@ int main() {
 
     int socket_descriptor = set_socket();
     struct sockaddr_in server_address = set_address(9000, 0);
-
     socklen_t server_address_length = sizeof(server_address);
-    int addr_conversion_ret_code = inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
-    
-    if(addr_conversion_ret_code<1) {
-        perror("Error on address conversion");
-        exit(1);
-    }
     
     char* data = "DATA";
     rdt_send(data, socket_descriptor, server_address, server_address_length);
