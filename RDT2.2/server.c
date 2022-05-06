@@ -23,6 +23,15 @@ int has_seq1(char* rcvpkt) {
     else return 0;
 }
 
+int set_socket() {
+    int socket_descriptor = socket(PF_INET, SOCK_DGRAM, 0);
+    if (socket_descriptor == -1) {
+        perror("Unable to initialize socket");
+        exit(1);
+    }
+    return socket_descriptor;
+}
+
 struct sockaddr_in set_address(int port, int isSend) {
     struct sockaddr_in address;
     address.sin_family=AF_INET;
@@ -39,9 +48,8 @@ struct sockaddr_in set_address(int port, int isSend) {
 }
 
 void udt_send(char* data, char* flag) {
-    int socket_descriptor_client = socket(PF_INET, SOCK_DGRAM, 0);
+    int socket_descriptor_client = set_socket();
     struct sockaddr_in client_address = set_address(8000, 1);
-
     socklen_t client_address_length = sizeof(client_address);
     
     if(rand()%10==5) { // simulate corrupt response
@@ -106,12 +114,7 @@ void rdt_rcv(char* data, int socket_descriptor, struct sockaddr_in client_addres
 int main() {
     printf("RDT 2.2 Server\n");
 
-    int socket_descriptor = socket(PF_INET, SOCK_DGRAM, 0);
-    if (socket_descriptor == -1) {
-        perror("Unable to initialize socket");
-        exit(1);
-    }
-
+    int socket_descriptor = set_socket();
     struct sockaddr_in address = set_address(9000, 0);
     socklen_t address_length = sizeof(address);
 
