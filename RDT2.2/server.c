@@ -111,6 +111,14 @@ void rdt_rcv(char* data, int socket_descriptor, struct sockaddr_in client_addres
     }
 }
 
+void check_bind(int socket_descriptor, struct sockaddr_in address, socklen_t address_length) {
+    int bindCode = bind(socket_descriptor, (struct sockaddr*) &address, address_length);
+    if(bindCode==-1) {
+        perror("Error on bind");
+        exit(1);
+    }
+}
+
 int main() {
     printf("RDT 2.2 Server\n");
 
@@ -118,11 +126,7 @@ int main() {
     struct sockaddr_in address = set_address(9000, 0);
     socklen_t address_length = sizeof(address);
 
-    int bindCode = bind(socket_descriptor, (struct sockaddr*) &address, address_length);
-    if(bindCode==-1) {
-        perror("Error on bind");
-        exit(1);
-    }
+    check_bind(socket_descriptor, address, address_length);
 
     char msg_buffer[1024];
     ssize_t msg_length = sizeof(msg_buffer);
