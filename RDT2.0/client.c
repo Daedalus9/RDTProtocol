@@ -74,16 +74,12 @@ void rdt_rcv(char* rcvpkt) {
 }
 
 int isNACK(char* rcvpkt) {
-    if(rcvpkt[0]=='N') {
-        return 1;
-    }
+    if(rcvpkt[0]=='N') return 1;
     else return 0;
 }
 
 int isACK(char* rcvpkt) {
-    if(rcvpkt[0]=='A') {
-        return 1;
-    }
+    if(rcvpkt[0]=='A') return 1;
     else return 0;
 }
 
@@ -93,9 +89,7 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
     char* sndpkt;
     int retransmit = 0;
     while(1) {
-        if(isACK(rcvpkt)) {
-            retransmit = 0;
-        }
+        if(isACK(rcvpkt)) retransmit = 0;
         if(isNACK(rcvpkt)) {
             printf("NACK received\nRetransmitting last packet...\n");
             sleep(2);
