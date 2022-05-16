@@ -48,7 +48,7 @@ void check_bind(int socket_descriptor, struct sockaddr_in address, socklen_t add
 }
 
 int main() {
-    printf("RDT 1.0 Server\n");
+    printf("RDT 1.0 Receiver\n");
 
     int socket_descriptor = set_socket();
     struct sockaddr_in address = set_address(9000);
