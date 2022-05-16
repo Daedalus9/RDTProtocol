@@ -49,7 +49,7 @@ struct sockaddr_in set_address(int port) {
 
 int main() {
 
-    printf("RDT 1.0 Client\n");
+    printf("RDT 1.0 Sender\n");
 
     int socket_descriptor = set_socket();
     struct sockaddr_in server_address = set_address(9000);
