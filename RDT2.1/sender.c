@@ -115,7 +115,7 @@ void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
 }
 
 int main() {
-    printf("RDT 2.1 Client\n");
+    printf("RDT 2.1 Sender\n");
 
     int socket_descriptor = set_socket();
     struct sockaddr_in server_address = set_address(9000, 0);
