@@ -120,7 +120,7 @@ void check_bind(int socket_descriptor, struct sockaddr_in address, socklen_t add
 }
 
 int main() {
-    printf("RDT 2.1 Server\n");
+    printf("RDT 2.1 Receiver\n");
     int socket_descriptor = set_socket();
     struct sockaddr_in address = set_address(9000, 0);
 
