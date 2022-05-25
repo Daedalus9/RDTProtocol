@@ -13,13 +13,13 @@ Due to socket.h incompatibility, these programs do not work in Windows OS
 ```bash
 git clone https://github.com/Daedalus9/RDTProtocol
 cd RDTProtocol/<RDT version>/
-gcc client.c -o client.out
-gcc server.c -o server.out
-./server.out
+gcc sender.c -o sender
+gcc receiver.c -o receiver
+./receiver
 ```
 
 In another bash:
 
 ```bash
-./client.out
+./sender
 ```
