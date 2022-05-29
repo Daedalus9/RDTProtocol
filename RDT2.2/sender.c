@@ -79,8 +79,7 @@ void udt_send(char* data, int socket_descriptor, struct sockaddr_in server_addre
         pkt[5] = '1';
         sendto(socket_descriptor, pkt, sizeof(pkt), 0, (struct sockaddr*) &server_address, server_address_length);
     }
-    else
-        sendto(socket_descriptor, data, sizeof(data), 0, (struct sockaddr*) &server_address, server_address_length);
+    else sendto(socket_descriptor, data, sizeof(data), 0, (struct sockaddr*) &server_address, server_address_length);
 }
 
 void rdt_send(char* data, int socket_descriptor, struct sockaddr_in server_address, socklen_t server_address_length) {
